@@ -14,6 +14,7 @@ const options = ["Male", "Female"];
 
 const GenderModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalDisabled, setModalDisabled] = useState(false);
   const [gender, setGender] = useState(options[0]);
   const [name, setName] = useState("");
 
@@ -23,13 +24,15 @@ const GenderModal = () => {
   const changeNameHandler = ({ target: { value } }) => setName(value);
 
   useEffect(() => {
+    setModalDisabled(!name?.length > 0);
+
     return () => {};
-  }, []);
+  }, [name]);
 
   const modalFooter = (
     <div>
       <Button label="cancel" severity="danger" />
-      <Button label="Add" severity="success" />
+      <Button disabled={modalDisabled} label="Add" severity="success" />
     </div>
   );
 
