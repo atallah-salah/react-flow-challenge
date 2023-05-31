@@ -1,5 +1,6 @@
-import React, { useCallback, useRef } from "react";
-import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow } from "reactflow";
+import React, { useCallback, useRef, useMemo } from "react";
+import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow, Controls, Background, Handle, Position } from "reactflow";
+import GenderNode from "./Nodes/GenderNode";
 
 const initialNodes = [
   {
@@ -8,6 +9,7 @@ const initialNodes = [
     data: { label: "ME" },
     position: { x: 0, y: 50 },
   },
+  { id: "node-1", type: "GenderNode", position: { x: 0, y: 0 }, data: { value: 123 } },
 ];
 
 let id = 1;
@@ -23,17 +25,15 @@ export const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { project } = useReactFlow();
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) => {
-        // Avoid connecting node edges with itself
-        const { source, target } = params;
-        if (source === target) return;
 
-        return addEdge(params, eds);
-      }),
-    [],
-  );
+  const nodeTypes = useMemo(() => ({ GenderNode }), []);
+
+  const onConnect = useCallback((params) => {
+    // Avoid connecting node edges with itself
+    const { source, target } = params;
+    if (source === target) return;
+    setEdges((eds) => addEdge(params, eds));
+  }, []);
 
   const onConnectStart = useCallback((_, { nodeId }) => {
     connectingNodeId.current = nodeId;
@@ -68,6 +68,7 @@ export const Flow = () => {
     <div className="wrapper" ref={reactFlowWrapper}>
       <ReactFlow
         nodes={nodes}
+        nodeTypes={nodeTypes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -77,6 +78,7 @@ export const Flow = () => {
         fitView
         fitViewOptions={fitViewOptions}
       />
+      <Controls />
     </div>
   );
 };
