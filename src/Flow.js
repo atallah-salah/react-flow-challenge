@@ -1,25 +1,20 @@
 import React, { useCallback, useRef } from "react";
-import ReactFlow, {
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  useReactFlow
-} from "reactflow";
+import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow } from "reactflow";
 
 const initialNodes = [
   {
     id: "0",
     type: "input",
     data: { label: "ME" },
-    position: { x: 0, y: 50 }
-  }
+    position: { x: 0, y: 50 },
+  },
 ];
 
 let id = 1;
 const getId = () => `${id++}`;
 
 const fitViewOptions = {
-  padding: 3
+  padding: 3,
 };
 
 export const Flow = () => {
@@ -29,8 +24,15 @@ export const Flow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { project } = useReactFlow();
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
+    (params) =>
+      setEdges((eds) => {
+        // Avoid connecting node edges with itself
+        const { source, target } = params;
+        if (source === target) return;
+
+        return addEdge(params, eds);
+      }),
+    [],
   );
 
   const onConnectStart = useCallback((_, { nodeId }) => {
@@ -50,18 +52,16 @@ export const Flow = () => {
           // we are removing the half of the node width (75) to center the new node
           position: project({
             x: event.clientX - left - 75,
-            y: event.clientY - top
+            y: event.clientY - top,
           }),
-          data: { label: `Node ${id}` }
+          data: { label: `Node ${id}` },
         };
 
         setNodes((nds) => nds.concat(newNode));
-        setEdges((eds) =>
-          eds.concat({ id, source: connectingNodeId.current, target: id })
-        );
+        setEdges((eds) => eds.concat({ id, source: connectingNodeId.current, target: id }));
       }
     },
-    [project]
+    [project],
   );
 
   return (
