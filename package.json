@@ -1,13 +1,14 @@
 {
   "dependencies": {
+    "primereact": "^9.5.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "reactflow": "11.7.1"
   },
   "main": "/index.js",
   "devDependencies": {
-    "react-scripts": "5.0.0",
-    "node-sass": "^7.0.3"
+    "node-sass": "^7.0.3",
+    "react-scripts": "5.0.0"
   },
   "keywords": [],
   "name": "react-flow-challenge-forked",
