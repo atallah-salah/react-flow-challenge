@@ -1,7 +1,11 @@
 import { ReactFlowProvider } from "reactflow";
 import { Flow } from "./Flow";
-import "reactflow/dist/style.css";
+
 import "./index.css";
+import "reactflow/dist/style.css";
+import "primereact/resources/primereact.min.css";
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import GenderModal from "./Components/GenderModal/GenderModal";
 
 //---Expectations---
 // Create this project in your github account and share the link to it after you are done.
@@ -42,7 +46,10 @@ import "./index.css";
 // The challenge should be delivered as a link to a public git repository
 
 export default () => (
-  <ReactFlowProvider>
-    <Flow />
-  </ReactFlowProvider>
+  <>
+    <GenderModal />
+    <ReactFlowProvider>
+      <Flow />
+    </ReactFlowProvider>
+  </>
 );
