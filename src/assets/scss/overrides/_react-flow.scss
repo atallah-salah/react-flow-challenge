@@ -1,4 +1,4 @@
-@import "../colors";
+@import "../variables";
 
 .react-flow {
   & &__handle {
@@ -7,22 +7,18 @@
     border-radius: 3px;
     background-color: $handle-background-color;
     &-top {
-      top: -10px;
+      top: -24px;
     }
 
     &-bottom {
-      bottom: -10px;
+      bottom: -24px;
     }
   }
 
   &__node {
     height: 40px;
-    width: 150px;
-    justify-content: center;
     align-items: center;
     display: flex;
-    border-width: 2px;
-    font-weight: 700;
   }
 
   :is(&__edge, &__connectionline) {

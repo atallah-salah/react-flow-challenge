@@ -1,11 +1,14 @@
-.container {
-  background-color: red;
+@import "../assets/scss/variables";
 
-  .name {
-    background-color: green;
+.gender-node {
+  padding: 16px 48px;
+  border-radius: $node-border-radius;
+
+  &--type-female {
+    background-color: $node-gender-female-background;
   }
 
-  .gender {
-    background-color: blue;
+  &--type-male {
+    background-color: $node-gender-male-background;
   }
 }
