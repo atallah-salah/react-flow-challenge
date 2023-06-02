@@ -9,40 +9,48 @@ import { Button } from "primereact/button";
 // styles
 import styles from "./GenderModal.module.scss";
 
+import { useDispatch, useSelector } from "react-redux";
+import { updateState } from "../../redux/slices/genderModalSlice";
+
 // static data
 const options = ["Male", "Female"];
 
 const GenderModal = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalDisabled, setModalDisabled] = useState(false);
-  const [gender, setGender] = useState(options[0]);
+  // handle state
+  const { modalVisible, modalCallback } = useSelector((state) => state.genderModal);
+  const dispatch = useDispatch();
+
+  // local state
   const [name, setName] = useState("");
+  const [gender, setGender] = useState("Male");
+  const [modalDisabled, setModalDisabled] = useState(true);
 
   // Handlers
-  const hideModalHandler = () => setModalVisible(false);
+  const hideModalHandler = () => dispatch(updateState({ modalVisible: false }));
   const switchGenderHandler = ({ value }) => setGender(value);
   const changeNameHandler = ({ target: { value } }) => setName(value);
+  const submitModalHandler = () => {
+    dispatch(updateState({ modalVisible: false, name, gender }));
+    modalCallback && modalCallback(name, gender);
+  };
 
   useEffect(() => {
     setModalDisabled(!name?.length > 0);
-
     return () => {};
   }, [name]);
 
   const modalFooter = (
     <div>
-      <Button label="cancel" severity="danger" />
-      <Button disabled={modalDisabled} label="Add" severity="success" />
+      <Button label="cancel" severity="danger" onClick={hideModalHandler} />
+      <Button disabled={modalDisabled} label="Add" severity="success" onClick={submitModalHandler} />
     </div>
   );
 
   return (
     <>
-      <Button label="open modal" onClick={() => setModalVisible(true)} />
-
       <div className={styles.container}>
         <Dialog header="Add family member" visible={modalVisible} onHide={hideModalHandler} footer={modalFooter}>
-          <InputText value={name} onChange={changeNameHandler} placeholder="member name" />
+          <InputText value={name} onChange={changeNameHandler} placeholder="Member name" />
           <SelectButton value={gender} onChange={switchGenderHandler} options={options} />
         </Dialog>
       </div>

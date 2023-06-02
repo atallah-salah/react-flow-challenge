@@ -1,16 +1,10 @@
 import React, { useCallback, useRef, useMemo } from "react";
-import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow, Controls, Background, Handle, Position } from "reactflow";
+import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow, Controls } from "reactflow";
 import GenderNode from "./Nodes/GenderNode";
+import { useDispatch } from "react-redux";
+import { updateState } from "./redux/slices/genderModalSlice";
 
-const initialNodes = [
-  {
-    id: "0",
-    type: "input",
-    data: { label: "ME" },
-    position: { x: 0, y: 50 },
-  },
-  { id: "node-1", type: "GenderNode", position: { x: 0, y: 0 }, data: { value: 123 } },
-];
+const initialNodes = [{ id: "0", type: "GenderNode", position: { x: 0, y: 50 }, data: { name: "test", gender: "Male" } }];
 
 let id = 1;
 const getId = () => `${id++}`;
@@ -25,6 +19,7 @@ export const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { project } = useReactFlow();
+  const dispatch = useDispatch();
 
   const nodeTypes = useMemo(() => ({ GenderNode }), []);
 
@@ -32,6 +27,7 @@ export const Flow = () => {
     // Avoid connecting node edges with itself
     const { source, target } = params;
     if (source === target) return;
+
     setEdges((eds) => addEdge(params, eds));
   }, []);
 
@@ -44,21 +40,27 @@ export const Flow = () => {
       const targetIsPane = event.target.classList.contains("react-flow__pane");
 
       if (targetIsPane) {
-        // we need to remove the wrapper bounds, in order to get the correct position
-        const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
-        const id = getId();
-        const newNode = {
-          id,
-          // we are removing the half of the node width (75) to center the new node
-          position: project({
-            x: event.clientX - left - 75,
-            y: event.clientY - top,
-          }),
-          data: { label: `Node ${id}` },
+        const modalCallback = (name, gender) => {
+          // we need to remove the wrapper bounds, in order to get the correct position
+          const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
+          const id = getId();
+          const newNode = {
+            id,
+            type: "GenderNode",
+            // we are removing the half of the node width (75) to center the new node
+            position: project({
+              x: event.clientX - left - 75,
+              y: event.clientY - top,
+            }),
+            data: { name, gender },
+          };
+
+          setNodes((nds) => nds.concat(newNode));
+          setEdges((eds) => eds.concat({ id, source: connectingNodeId.current, target: id }));
         };
 
-        setNodes((nds) => nds.concat(newNode));
-        setEdges((eds) => eds.concat({ id, source: connectingNodeId.current, target: id }));
+        // dispatch modal action to show genderModal with success callback function
+        dispatch(updateState({ modalVisible: true, modalCallback }));
       }
     },
     [project],
