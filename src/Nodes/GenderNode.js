@@ -7,8 +7,8 @@ const GenderNode = ({ data: { name, gender } }) => {
     <>
       <Handle type="target" position={Position.Top} />
       <div className={styles.container}>
-        <p>{name}</p>
-        <p>{gender}</p>
+        <p className={styles.name}>{name}</p>
+        <p className={styles.gender}>{gender}</p>
       </div>
       <Handle type="source" position={Position.Bottom} />
     </>

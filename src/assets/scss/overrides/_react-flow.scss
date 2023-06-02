@@ -1,0 +1,38 @@
+@import "../colors";
+
+.react-flow {
+  & &__handle {
+    width: 30px;
+    height: 14px;
+    border-radius: 3px;
+    background-color: $handle-background-color;
+    &-top {
+      top: -10px;
+    }
+
+    &-bottom {
+      bottom: -10px;
+    }
+  }
+
+  &__node {
+    height: 40px;
+    width: 150px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-width: 2px;
+    font-weight: 700;
+  }
+
+  :is(&__edge, &__connectionline) {
+    path {
+      stroke-width: 2;
+    }
+  }
+}
+
+.wrapper {
+  flex-grow: 1;
+  height: 100%;
+}

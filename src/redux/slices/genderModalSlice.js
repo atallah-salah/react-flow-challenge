@@ -6,7 +6,7 @@ const initialState = {
 };
 
 export const genderModalSlice = createSlice({
-  name: "general",
+  name: "genderModal",
   initialState,
   reducers: {
     setState: (state, action) => {
