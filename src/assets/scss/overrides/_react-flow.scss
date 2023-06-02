@@ -7,18 +7,22 @@
     border-radius: 3px;
     background-color: $handle-background-color;
     &-top {
-      top: -24px;
+      top: -10px;
     }
 
     &-bottom {
-      bottom: -24px;
+      bottom: -10px;
     }
   }
 
   &__node {
-    height: 40px;
+    height: 72px;
     align-items: center;
     display: flex;
+    border-radius: $node-border-radius;
+    &.selected {
+      box-shadow: 0 0 0.2px 1px blueviolet;
+    }
   }
 
   :is(&__edge, &__connectionline) {

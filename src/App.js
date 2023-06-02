@@ -5,6 +5,7 @@ import "reactflow/dist/style.css";
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import GenderModal from "./Components/GenderModal/GenderModal";
+import DeleteModal from "./Components/DeleteModal/DeleteModal";
 
 //---Expectations---
 // Create this project in your github account and share the link to it after you are done.
@@ -47,6 +48,7 @@ import GenderModal from "./Components/GenderModal/GenderModal";
 export default () => (
   <>
     <GenderModal />
+    <DeleteModal />
     <ReactFlowProvider>
       <Flow />
     </ReactFlowProvider>

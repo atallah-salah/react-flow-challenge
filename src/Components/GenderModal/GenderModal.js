@@ -10,7 +10,7 @@ import { Button } from "primereact/button";
 import styles from "./GenderModal.module.scss";
 
 import { useDispatch, useSelector } from "react-redux";
-import { updateState } from "../../redux/slices/genderModalSlice";
+import { updateGenderModalState } from "../../redux/slices/genderModalSlice";
 
 // static data
 const options = ["Male", "Female"];
@@ -26,11 +26,11 @@ const GenderModal = () => {
   const [modalDisabled, setModalDisabled] = useState(true);
 
   // Handlers
-  const hideModalHandler = () => dispatch(updateState({ modalVisible: false }));
+  const hideModalHandler = () => dispatch(updateGenderModalState({ modalVisible: false }));
   const switchGenderHandler = ({ value }) => setGender(value);
   const changeNameHandler = ({ target: { value } }) => setName(value);
   const submitModalHandler = () => {
-    dispatch(updateState({ modalVisible: false, name, gender }));
+    dispatch(updateGenderModalState({ modalVisible: false, name, gender }));
     modalCallback && modalCallback(name, gender);
   };
 

@@ -5,20 +5,20 @@ const initialState = {
   modalCallback: () => {},
 };
 
-export const genderModalSlice = createSlice({
-  name: "genderModal",
+export const deleteModalSlice = createSlice({
+  name: "deleteModal",
   initialState,
   reducers: {
-    setGenderModalState: (state, action) => {
+    setDeleteModalState: (state, action) => {
       state = { ...action.payload };
       return state;
     },
-    updateGenderModalState: (state, action) => {
+    updateDeleteModalState: (state, action) => {
       state = { ...state, ...action.payload };
       return state;
     },
   },
 });
 
-export const { setGenderModalState, updateGenderModalState } = genderModalSlice.actions;
-export default genderModalSlice.reducer;
+export const { setDeleteModalState, updateDeleteModalState } = deleteModalSlice.actions;
+export default deleteModalSlice.reducer;

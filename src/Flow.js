@@ -1,8 +1,9 @@
 import React, { useCallback, useRef, useMemo } from "react";
-import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow, Controls } from "reactflow";
+import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow, Controls, getIncomers, getOutgoers, getConnectedEdges, removeElement } from "reactflow";
 import GenderNode from "./Nodes/GenderNode";
 import { useDispatch } from "react-redux";
-import { updateState } from "./redux/slices/genderModalSlice";
+import { updateGenderModalState } from "./redux/slices/genderModalSlice";
+import { updateDeleteModalState } from "./redux/slices/deleteModalSlice";
 
 const initialNodes = [{ id: "0", type: "GenderNode", position: { x: 0, y: 50 }, data: { name: "test", gender: "Male" } }];
 
@@ -60,11 +61,58 @@ export const Flow = () => {
         };
 
         // dispatch modal action to show genderModal with success callback function
-        dispatch(updateState({ modalVisible: true, modalCallback }));
+        dispatch(updateGenderModalState({ modalVisible: true, modalCallback }));
       }
     },
     [project],
   );
+
+  const onNodesDelete = useCallback(
+    (deleted) => {
+      const modalCallback = (delete_all_childs) => {
+        setEdges(
+          deleted.reduce((acc, currentNode) => {
+            const incomers = getIncomers(currentNode, nodes, edges);
+            const outgoers = getOutgoers(currentNode, nodes, edges);
+            const connectedEdges = getConnectedEdges([currentNode], edges);
+
+            const remainingEdges = acc.filter((edge) => !connectedEdges.includes(edge));
+            const createdEdges = incomers.flatMap(({ id: source }) => outgoers.map(({ id: target }) => ({ id: `${source}->${target}`, source, target })));
+
+            if (delete_all_childs) {
+              const updatedNodes = deleteAllReltatedNodes(currentNode);
+              setNodes(updatedNodes);
+            }
+
+            return [...remainingEdges, ...createdEdges];
+          }, edges),
+        );
+      };
+
+      // dispatch modal action to show deleteModal with success callback function
+      dispatch(updateDeleteModalState({ modalVisible: true, modalCallback }));
+    },
+    [nodes, edges],
+  );
+
+  const deleteNodesWithMyIdSourced = (deletedNodeId, deletedNodes = {}) => {
+    edges.map((edge) => {
+      if (edge.source === deletedNodeId) {
+        deleteNodesWithMyIdSourced(edge.id, deletedNodes);
+        deletedNodes[edge.id] = true;
+      }
+    });
+
+    return { ...deletedNodes, [deletedNodeId]: true };
+  };
+
+  const deleteAllReltatedNodes = (deletedNode) => {
+    const deletedNodesChecked = {};
+    const deletedNodes = deleteNodesWithMyIdSourced(deletedNode.id, deletedNodesChecked);
+    const newNodes = nodes.filter((node) => !deletedNodes[node.id]);
+
+    return newNodes;
+  };
 
   return (
     <div className="wrapper" ref={reactFlowWrapper}>
@@ -77,6 +125,7 @@ export const Flow = () => {
         onConnect={onConnect}
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
+        onNodesDelete={onNodesDelete}
         fitView
         fitViewOptions={fitViewOptions}
       />
