@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 // third party components
 import { Dialog } from "primereact/dialog";
 import { SelectButton } from "primereact/selectbutton";
 import { Button } from "primereact/button";
-
-// styles
-import styles from "./DeleteModal.module.scss";
 
 import { useDispatch, useSelector } from "react-redux";
 import { updateDeleteModalState } from "../../redux/slices/deleteModalSlice";
@@ -24,10 +21,8 @@ const DeleteModal = () => {
 
   // local state
   const [option, setOption] = useState(true);
-  const [modalDisabled, setModalDisabled] = useState(false);
 
   // Handlers
-  const hideModalHandler = () => dispatch(updateDeleteModalState({ modalVisible: false }));
   const switchOptionHandler = ({ value }) => {
     setOption(value);
   };
@@ -39,19 +34,16 @@ const DeleteModal = () => {
 
   const modalFooter = (
     <div>
-      <Button label="cancel" onClick={hideModalHandler} />
-      <Button disabled={modalDisabled} label="Delete" severity="danger" onClick={submitModalHandler} />
+      <Button label="Delete" severity="danger" onClick={submitModalHandler} />
     </div>
   );
 
   return (
     <>
-      <div className={styles.container}>
-        <Dialog header="Delete family member" visible={modalVisible} onHide={hideModalHandler} footer={modalFooter}>
-          <p>Please choose what to do with childs</p>
-          <SelectButton value={option} onChange={switchOptionHandler} options={options} optionLabel="name" />
-        </Dialog>
-      </div>
+      <Dialog header="Delete family member" visible={modalVisible} closable={false} footer={modalFooter}>
+        <p>Please choose what to do with childs</p>
+        <SelectButton value={option} onChange={switchOptionHandler} options={options} optionLabel="name" />
+      </Dialog>
     </>
   );
 };

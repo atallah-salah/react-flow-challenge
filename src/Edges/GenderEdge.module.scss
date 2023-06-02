@@ -1,0 +1,12 @@
+@import "../assets/scss/variables";
+
+.button {
+  background-color: $handle-background-color;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: white;
+  border: unset;
+  cursor: pointer;
+}

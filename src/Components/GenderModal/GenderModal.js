@@ -6,9 +6,6 @@ import { SelectButton } from "primereact/selectbutton";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 
-// styles
-import styles from "./GenderModal.module.scss";
-
 import { useDispatch, useSelector } from "react-redux";
 import { updateGenderModalState } from "../../redux/slices/genderModalSlice";
 
@@ -32,12 +29,14 @@ const GenderModal = () => {
   const submitModalHandler = () => {
     dispatch(updateGenderModalState({ modalVisible: false, name, gender }));
     modalCallback && modalCallback(name, gender);
+    setName("");
+    setGender("Male");
   };
 
   useEffect(() => {
-    setModalDisabled(!name?.length > 0);
+    setModalDisabled(!name?.length > 0 || !gender);
     return () => {};
-  }, [name]);
+  }, [name, gender]);
 
   const modalFooter = (
     <div>
@@ -48,12 +47,10 @@ const GenderModal = () => {
 
   return (
     <>
-      <div className={styles.container}>
-        <Dialog header="Add family member" visible={modalVisible} onHide={hideModalHandler} footer={modalFooter}>
-          <InputText value={name} onChange={changeNameHandler} placeholder="Member name" />
-          <SelectButton value={gender} onChange={switchGenderHandler} options={options} />
-        </Dialog>
-      </div>
+      <Dialog header="Add family member" visible={modalVisible} onHide={hideModalHandler} footer={modalFooter}>
+        <InputText value={name} onChange={changeNameHandler} placeholder="Member name" />
+        <SelectButton value={gender} onChange={switchGenderHandler} options={options} />
+      </Dialog>
     </>
   );
 };

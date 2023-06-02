@@ -6,9 +6,6 @@ import { SelectButton } from "primereact/selectbutton";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 
-// styles
-import styles from "./CreateMiddleNodeModal.module.scss";
-
 import { useDispatch, useSelector } from "react-redux";
 import { updateCreateMiddleNodeSlice } from "../../redux/slices/createMiddleNodeSlice";
 
@@ -17,7 +14,7 @@ const options = ["Male", "Female"];
 
 const CreateMiddleNodeModal = () => {
   // handle state
-  const { modalVisible, data } = useSelector((state) => state.createMiddleNodeModal);
+  const { modalVisible } = useSelector((state) => state.createMiddleNodeModal);
   const dispatch = useDispatch();
 
   // local state
@@ -31,10 +28,12 @@ const CreateMiddleNodeModal = () => {
   const changeNameHandler = ({ target: { value } }) => setName(value);
   const submitModalHandler = () => {
     dispatch(updateCreateMiddleNodeSlice({ modalVisible: false, createNode: true, nodeName: name, nodeGender: gender }));
+    setName("");
+    setGender("Male");
   };
 
   useEffect(() => {
-    setModalDisabled(!name?.length > 0);
+    setModalDisabled(!name?.length > 0 || !gender);
     return () => {};
   }, [name]);
 
@@ -47,12 +46,10 @@ const CreateMiddleNodeModal = () => {
 
   return (
     <>
-      <div className={styles.container}>
-        <Dialog header="Add family member" visible={modalVisible} onHide={hideModalHandler} footer={modalFooter}>
-          <InputText value={name} onChange={changeNameHandler} placeholder="Member name" />
-          <SelectButton value={gender} onChange={switchGenderHandler} options={options} />
-        </Dialog>
-      </div>
+      <Dialog header="Add family member" visible={modalVisible} onHide={hideModalHandler} footer={modalFooter}>
+        <InputText value={name} onChange={changeNameHandler} placeholder="Member name" />
+        <SelectButton value={gender} onChange={switchGenderHandler} options={options} />
+      </Dialog>
     </>
   );
 };

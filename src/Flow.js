@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useMemo } from "react";
+import React, { useCallback, useRef } from "react";
 import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow, Controls, getIncomers, getOutgoers, getConnectedEdges, removeElement } from "reactflow";
 import GenderNode from "./Nodes/GenderNode";
 import GenderEdge from "./Edges/GenderEdge";
@@ -9,14 +9,16 @@ import { updateDeleteModalState } from "./redux/slices/deleteModalSlice";
 import { useEffect } from "react";
 import { updateCreateMiddleNodeSlice } from "./redux/slices/createMiddleNodeSlice";
 
-const initialNodes = [{ id: "0", type: "GenderNode", position: { x: 0, y: 50 }, data: { name: "test", gender: "Male" } }];
-
-let id = 1;
-const getId = () => `${id++}`;
-
+// static data
+const initialNodes = [{ id: "0", type: "GenderNode", position: { x: 0, y: 50 }, data: { name: "Me", gender: "Male" } }];
 const fitViewOptions = {
   padding: 3,
 };
+const nodeTypes = { GenderNode };
+const edgeTypes = { GenderEdge };
+
+let id = 1;
+const getId = () => `${id++}`;
 
 export const Flow = () => {
   const reactFlowWrapper = useRef(null);
@@ -24,11 +26,10 @@ export const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { project } = useReactFlow();
+
+  // redux state management
   const dispatch = useDispatch();
   const { data, createNode, nodeName, nodeGender } = useSelector((state) => state.createMiddleNodeModal);
-
-  const nodeTypes = useMemo(() => ({ GenderNode }), []);
-  const edgeTypes = useMemo(() => ({ GenderEdge }), []);
 
   const onConnect = useCallback((params) => {
     // Avoid connecting node edges with itself
@@ -85,8 +86,9 @@ export const Flow = () => {
             const remainingEdges = acc.filter((edge) => !connectedEdges.includes(edge));
             const createdEdges = incomers.flatMap(({ id: source }) => outgoers.map(({ id: target }) => ({ id: `${source}->${target}`, source, target })));
 
+            // check if user input is to delete all nested nodes of the current node
             if (delete_all_childs) {
-              const updatedNodes = deleteAllReltatedNodes(currentNode);
+              const updatedNodes = deleteNode(currentNode);
               setNodes(updatedNodes);
             }
 
@@ -101,10 +103,11 @@ export const Flow = () => {
     [nodes, edges],
   );
 
-  const deleteNodesWithMyIdSourced = (deletedNodeId, deletedNodes = {}) => {
+  const deleteNestedNodes = (deletedNodeId, deletedNodes = {}) => {
+    // loop over all current edges and locate all nested nodes
     edges.map((edge) => {
       if (edge.source === deletedNodeId) {
-        deleteNodesWithMyIdSourced(edge.id, deletedNodes);
+        deleteNestedNodes(edge.id, deletedNodes);
         deletedNodes[edge.id] = true;
       }
     });
@@ -112,9 +115,9 @@ export const Flow = () => {
     return { ...deletedNodes, [deletedNodeId]: true };
   };
 
-  const deleteAllReltatedNodes = (deletedNode) => {
-    const deletedNodesChecked = {};
-    const deletedNodes = deleteNodesWithMyIdSourced(deletedNode.id, deletedNodesChecked);
+  const deleteNode = (deletedNode) => {
+    const locatedNodes = {};
+    const deletedNodes = deleteNestedNodes(deletedNode.id, locatedNodes);
     const newNodes = nodes.filter((node) => !deletedNodes[node.id]);
 
     return newNodes;
@@ -147,6 +150,7 @@ export const Flow = () => {
 
         return newEdges;
       });
+      // hide modal and clear all data
       dispatch(updateCreateMiddleNodeSlice({ modalVisible: false, data: {}, createNode: false }));
     }
     return () => {};

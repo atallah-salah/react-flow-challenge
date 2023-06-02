@@ -10,10 +10,6 @@ export const createMiddleNodeSlice = createSlice({
   name: "deleteModal",
   initialState,
   reducers: {
-    setCreateMiddleNodeSlice: (state, action) => {
-      state = { ...action.payload };
-      return state;
-    },
     updateCreateMiddleNodeSlice: (state, action) => {
       state = { ...state, ...action.payload };
       return state;
@@ -21,5 +17,5 @@ export const createMiddleNodeSlice = createSlice({
   },
 });
 
-export const { setCreateMiddleNodeSlice, updateCreateMiddleNodeSlice } = createMiddleNodeSlice.actions;
+export const { updateCreateMiddleNodeSlice } = createMiddleNodeSlice.actions;
 export default createMiddleNodeSlice.reducer;
