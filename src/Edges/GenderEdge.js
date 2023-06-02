@@ -1,11 +1,11 @@
 import React from "react";
 import { BaseEdge, EdgeLabelRenderer, getBezierPath } from "reactflow";
-import { updateCreateMiddleNodeSlice } from "../redux/slices/createMiddleNodeSlice";
 import { useDispatch } from "react-redux";
 
 import styles from "./GenderEdge.module.scss";
+import { updateGenderModalState } from "../redux/slices/genderModalSlice";
 
-const GenderEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd }) => {
+const GenderEdge = ({ id, source, target, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, ...rest }) => {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -17,9 +17,8 @@ const GenderEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, ta
 
   const dispatch = useDispatch();
 
-  const onEdgeClick = (event, id) => {
-    // show create new node modal
-    dispatch(updateCreateMiddleNodeSlice({ modalVisible: true, data: { id, labelX, labelY } }));
+  const onEdgeClick = (id) => {
+    dispatch(updateGenderModalState({ modalVisible: true, creationType: "InMiddle", data: { id, source, target, labelX, labelY } }));
   };
 
   return (
@@ -34,7 +33,7 @@ const GenderEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, ta
             pointerEvents: "all",
           }}
         >
-          <button className={styles.button} onClick={(event) => onEdgeClick(event, id)}>
+          <button className={styles.button} onClick={onEdgeClick.bind({}, id)}>
             +
           </button>
         </div>

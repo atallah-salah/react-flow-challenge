@@ -1,33 +1,28 @@
-import React, { useState, useEffect } from "react";
-
-// third party components
-import { Dialog } from "primereact/dialog";
-import { SelectButton } from "primereact/selectbutton";
-import { InputText } from "primereact/inputtext";
-import { Button } from "primereact/button";
-
+import React from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateCreateMiddleNodeSlice } from "../../redux/slices/createMiddleNodeSlice";
+import { updateGenderModalState } from "../../redux/slices/genderModalSlice";
+import { useEffect } from "react";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { InputText } from "primereact/inputtext";
+import { SelectButton } from "primereact/selectbutton";
 
-// static data
-const options = ["Male", "Female"];
+const GENDERS = ["Male", "Female"];
 
-const CreateMiddleNodeModal = () => {
-  // handle state
-  const { modalVisible } = useSelector((state) => state.createMiddleNodeModal);
+const NodeCreattionModal = ({}) => {
+  const { modalVisible } = useSelector((state) => state.genderModal);
   const dispatch = useDispatch();
 
-  // local state
   const [name, setName] = useState("");
   const [gender, setGender] = useState("Male");
   const [modalDisabled, setModalDisabled] = useState(true);
 
-  // Handlers
-  const hideModalHandler = () => dispatch(updateCreateMiddleNodeSlice({ modalVisible: false }));
+  const hideModalHandler = () => dispatch(updateGenderModalState({ modalVisible: false }));
   const switchGenderHandler = ({ value }) => setGender(value);
   const changeNameHandler = ({ target: { value } }) => setName(value);
   const submitModalHandler = () => {
-    dispatch(updateCreateMiddleNodeSlice({ modalVisible: false, createNode: true, nodeName: name, nodeGender: gender }));
+    dispatch(updateGenderModalState({ modalVisible: false, isCreateNode: true, nodeName: name, nodeGender: gender }));
     setName("");
     setGender("Male");
   };
@@ -48,10 +43,10 @@ const CreateMiddleNodeModal = () => {
     <>
       <Dialog header="Add family member" visible={modalVisible} onHide={hideModalHandler} footer={modalFooter}>
         <InputText value={name} onChange={changeNameHandler} placeholder="Member name" />
-        <SelectButton value={gender} onChange={switchGenderHandler} options={options} />
+        <SelectButton value={gender} onChange={switchGenderHandler} options={GENDERS} />
       </Dialog>
     </>
   );
 };
 
-export default CreateMiddleNodeModal;
+export default NodeCreattionModal;

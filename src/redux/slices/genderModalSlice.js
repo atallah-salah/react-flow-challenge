@@ -2,7 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   modalVisible: false,
-  modalCallback: () => {},
+  isCreateNode: false,
+  creationType: "",
+  nodeName: "",
+  genderName: "",
+  data: {},
 };
 
 export const genderModalSlice = createSlice({

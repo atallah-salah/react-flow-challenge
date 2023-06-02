@@ -4,14 +4,12 @@ import { Flow } from "./Flow";
 import "reactflow/dist/style.css";
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
-import GenderModal from "./Components/GenderModal/GenderModal";
 import DeleteModal from "./Components/DeleteModal/DeleteModal";
-import CreateMiddleNodeModal from "./Components/CreateMiddleNodeModal/CreateMiddleNodeModal";
+import NodeCreattionModal from "./Components/NodeCreattionModal/NodeCreattionModal";
 
 export default () => (
   <>
-    <GenderModal />
-    <CreateMiddleNodeModal />
+    <NodeCreattionModal />
     <DeleteModal />
     <ReactFlowProvider>
       <Flow />
