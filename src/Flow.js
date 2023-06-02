@@ -1,9 +1,13 @@
 import React, { useCallback, useRef, useMemo } from "react";
 import ReactFlow, { useNodesState, useEdgesState, addEdge, useReactFlow, Controls, getIncomers, getOutgoers, getConnectedEdges, removeElement } from "reactflow";
 import GenderNode from "./Nodes/GenderNode";
-import { useDispatch } from "react-redux";
+import GenderEdge from "./Edges/GenderEdge";
+
+import { useDispatch, useSelector } from "react-redux";
 import { updateGenderModalState } from "./redux/slices/genderModalSlice";
 import { updateDeleteModalState } from "./redux/slices/deleteModalSlice";
+import { useEffect } from "react";
+import { updateCreateMiddleNodeSlice } from "./redux/slices/createMiddleNodeSlice";
 
 const initialNodes = [{ id: "0", type: "GenderNode", position: { x: 0, y: 50 }, data: { name: "test", gender: "Male" } }];
 
@@ -21,8 +25,10 @@ export const Flow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { project } = useReactFlow();
   const dispatch = useDispatch();
+  const { data, createNode, nodeName, nodeGender } = useSelector((state) => state.createMiddleNodeModal);
 
   const nodeTypes = useMemo(() => ({ GenderNode }), []);
+  const edgeTypes = useMemo(() => ({ GenderEdge }), []);
 
   const onConnect = useCallback((params) => {
     // Avoid connecting node edges with itself
@@ -57,7 +63,7 @@ export const Flow = () => {
           };
 
           setNodes((nds) => nds.concat(newNode));
-          setEdges((eds) => eds.concat({ id, source: connectingNodeId.current, target: id }));
+          setEdges((eds) => eds.concat({ id, source: connectingNodeId.current, target: id, type: "GenderEdge" }));
         };
 
         // dispatch modal action to show genderModal with success callback function
@@ -114,11 +120,44 @@ export const Flow = () => {
     return newNodes;
   };
 
+  useEffect(() => {
+    if (createNode) {
+      // we need to remove the wrapper bounds, in order to get the correct position
+      const id = getId();
+      const newNode = {
+        id,
+        type: "GenderNode",
+        // we are removing the half of the node width (75) to center the new node
+        position: project({
+          x: data.labelX,
+          y: data.labelY,
+        }),
+        data: { name: nodeName, gender: nodeGender },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+      setEdges((eds) => {
+        let newEdges = eds.filter(({ source, target }) => {
+          // filter the existing edge from the list
+          return source !== connectingNodeId.current && target !== data.id;
+        });
+
+        // add new 2 edges to the previous node and the next node
+        newEdges = [...newEdges, { id, source: connectingNodeId.current, target: id, type: "GenderEdge" }, { id, source: id, target: data.id, type: "GenderEdge" }];
+
+        return newEdges;
+      });
+      dispatch(updateCreateMiddleNodeSlice({ modalVisible: false, data: {}, createNode: false }));
+    }
+    return () => {};
+  }, [createNode]);
+
   return (
     <div className="wrapper" ref={reactFlowWrapper}>
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
